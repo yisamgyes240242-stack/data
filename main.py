@@ -53,12 +53,11 @@ def calculate_tree_count(emission_g):
 # 3. Streamlit UI
 # =========================
 st.title("🌱 생활 에너지 탄소 배출 & 편백나무 계산기")
-
 st.caption("기준: CO₂ 1톤(1,000,000 g) 당 편백나무 8그루 필요")
 
 st.subheader("1️⃣ 에너지 사용량 입력")
 
-# 에너지별 입력 (복잡하지 않게 세로로 배치)
+# 에너지별 입력 (세로로 배치)
 amount_inputs = {}
 for energy in emission_factor.keys():
     amount = st.number_input(
@@ -82,7 +81,6 @@ if st.button("계산하기"):
             total_emission_g += emission_g
             tree_count = calculate_tree_count(emission_g)
 
-            # 에너지별 결과(간단하게, 소수점 최소화)
             detail_rows.append({
                 "에너지": energy,
                 "사용량": int(amount) if amount.is_integer() else round(amount, 1),
@@ -98,7 +96,6 @@ if st.button("계산하기"):
         total_emission_kg = total_emission_g / 1000
         total_trees = calculate_tree_count(total_emission_g)
 
-        # 소수점 깔끔하게 (kg은 1자리)
         col1, col2 = st.columns(2)
         with col1:
             st.metric("총 배출량", f"{total_emission_kg:,.1f} kg CO₂")
@@ -110,7 +107,7 @@ if st.button("계산하기"):
         # 🌳 이모지로 나무 보여주기
         st.markdown("### 🌳 편백나무를 눈으로 보기")
 
-        max_trees_to_show = 50  # 화면 터지지 않게 최대 50개만 이모지 표시
+        max_trees_to_show = 50  # 화면 보호용
         trees_to_show = min(total_trees, max_trees_to_show)
 
         if trees_to_show > 0:
@@ -122,7 +119,38 @@ if st.button("계산하기"):
         else:
             st.write("필요한 편백나무 수가 거의 없어요 🍀")
 
-        # 에너지별 자세한 정보는 접어서 보기 (복잡함 ↓)
+        # 에너지별 자세한 정보는 접어서 보기
         if detail_rows:
             with st.expander("에너지별 자세한 배출량 보기"):
                 st.table(detail_rows)
+
+        # =========================
+        # 5. 환경친화적인 생활 계획 문구 추가
+        # =========================
+        st.markdown("---")
+        st.subheader("🌏 환경친화적인 생활 계획")
+
+        st.markdown(
+            """
+**① 냉·난방 온도 적정하게 유지하기**  
+- 여름에는 **26℃ 이상**, 겨울에는 **20℃ 이하**로 유지하기  
+- 냉난방 온도를 1℃만 조정해도  
+  → 연간 약 **110kg CO₂**를 줄이고  
+  → 냉난방 비용을 약 **34,000원** 절약할 수 있음
+
+**② 절전형 전등으로 교체하기**  
+- 백열등(60W)을 형광등(24W)으로 교체하면  
+  → 연간 약 **17kg CO₂**를 줄일 수 있음  
+- 절전형 형광등은  
+  → 백열등보다 **수명이 약 8배 길고**,  
+  → **전력 소비도 더 적음**
+
+**③ 걷기 · 자전거 · 대중교통 이용 생활화하기**  
+- 승용차 이용을 **일주일에 하루만 줄여도**  
+  → 연간 약 **445kg CO₂**를 줄일 수 있음
+
+이 계산기를 통해 내가 배출한 탄소량을 확인하고,  
+위와 같은 **환경친화적인 생활 계획**을 실천한다면  
+일상 속에서 조금씩 지구를 지키는 습관을 만들 수 있다.
+"""
+        )
